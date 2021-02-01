@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Models;
 
 namespace DatingApp.API.Controllers
 {
@@ -60,9 +61,44 @@ namespace DatingApp.API.Controllers
             return StatusCode(201);
         }
 
+        [HttpPost("diradd")]
+        public async Task<IActionResult> DirectAdd(Value value)
+        {
+            //var valueToAdd = new Value{Name = value};
+
+
+            await _context.Values.AddAsync(value);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(201);
+
+        }
+
+
+
+
+        [HttpDelete("dirdel")]
+        public async Task<IActionResult> DirectDel(int id)
+        {
+            var valueToDelete = await _context.Values.FindAsync(id);
+
+
+            _context.Values.Remove(valueToDelete);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(201);
+
+        }
+
+
+
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
+           
+            
+
             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
             if (userFromRepo == null)
                 return Unauthorized();
@@ -91,6 +127,8 @@ namespace DatingApp.API.Controllers
                 token = tokenHandler.WriteToken(token)
             });
 
+            
+           
 
 
         }

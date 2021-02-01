@@ -1,0 +1,17 @@
+
+
+<form #directAddForm1="ngForm" (ngSubmit)="CreateValue()">
+  <input type="text" name="name" class="form-control" [(ngModel)]="value.name">
+  <button class="btn btn-success" type="submit">AddValue</button>
+  </form>
+
+  <form #directAddForm2="ngForm" (ngSubmit)="CreateUser()">
+    <input type="text" name="name" class="form-control" [(ngModel)]="user.username">
+    <input type="text" name="password" class="form-control" [(ngModel)]="user.password">
+    <button class="btn btn-success" type="submit">AddUser</button>
+    </form>
+
+
+
+
+

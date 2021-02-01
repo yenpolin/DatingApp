@@ -1,12 +1,30 @@
+using System.Threading.Tasks;
 using Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Controllers
 {
-    public class Userlist
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserlistController: ControllerBase
     {
-        public Userlist(DataContext context)
+         private readonly DataContext _context;
+        public UserlistController(DataContext context)
         {
-            
+            _context=context;
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetValues()
+        {
+            var valueslist= await _context.Users.ToListAsync();
+
+            return Ok(valueslist);
+        }
+
     }
 }
