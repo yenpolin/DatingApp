@@ -17,13 +17,13 @@ namespace DatingApp.API.Controllers
             _context=context;
         }
 
-        [AllowAnonymous]
+        
         [HttpGet]
-        public async Task<IActionResult> GetValues()
+        public async Task<IActionResult> GetUsers()
         {
-            var valueslist= await _context.Users.ToListAsync();
+            var userlist= await _context.Users.ToListAsync();
 
-            return Ok(valueslist);
+            return Ok(userlist);
         }
 
     }
