@@ -13,5 +13,6 @@ namespace Data
         public DbSet<User> Users {get; set;}
         
         public DbSet<Photo> Photos {get; set;}
+        public DbSet<Record> Records { get; set; }
     }
 }

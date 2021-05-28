@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models;
 
 namespace DatingApp.API.Controllers
 {
@@ -15,19 +17,21 @@ namespace DatingApp.API.Controllers
     public class ValuesController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
-        public ValuesController(DataContext context)
+        public ValuesController(DataContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
 
         }
-        
-// GET api/values
+
+        // GET api/values
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetValues()
         {
-            var valueslist= await _context.Values.ToListAsync();
+            var valueslist = await _context.Values.ToListAsync();
 
             return Ok(valueslist);
         }
@@ -37,14 +41,18 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetValues(int id)
         {
-            var thevalue= await _context.Values.FirstOrDefaultAsync(x => x.Id == id);
+            var thevalue = await _context.Values.FirstOrDefaultAsync(x => x.Id == id);
             return Ok(thevalue);
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post(Value value)
         {
+            await _context.Values.AddAsync(value);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(201);
         }
 
         // PUT api/values/5
@@ -53,10 +61,18 @@ namespace DatingApp.API.Controllers
         {
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+/*
+        // Put api/values/5
+        [AllowAnonymous]
+        [HttpPut]
+        public async Task<IActionResult> Update(int id, string name)
         {
-        }
+            var valueToUpdate = await _context.Values.FindAsync(id);
+
+            _mapper.Map(name, valueToUpdate.Name);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(201);
+        }*/
     }
 }

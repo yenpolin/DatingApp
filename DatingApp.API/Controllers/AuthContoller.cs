@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
@@ -16,7 +17,7 @@ using Models;
 
 namespace DatingApp.API.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -24,8 +25,10 @@ namespace DatingApp.API.Controllers
         private readonly IAuthRepository _repo;
         private readonly DataContext _context;
         private readonly IConfiguration _config;
-        public AuthController(IAuthRepository repo, DataContext context, IConfiguration config)
+        private readonly IMapper _mapper;
+        public AuthController(IAuthRepository repo, DataContext context, IConfiguration config, IMapper mapper)
         {
+           _mapper = mapper;
             _config = config;
             _context = context;
             _repo = repo;
@@ -64,7 +67,7 @@ namespace DatingApp.API.Controllers
         [HttpPost("diradd")]
         public async Task<IActionResult> DirectAdd(Value value)
         {
-            //var valueToAdd = new Value{Name = value};
+            
 
 
             await _context.Values.AddAsync(value);
@@ -77,7 +80,7 @@ namespace DatingApp.API.Controllers
 
 
 
-        [HttpDelete("dirdel")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DirectDel(int id)
         {
             var valueToDelete = await _context.Values.FindAsync(id);
@@ -91,13 +94,30 @@ namespace DatingApp.API.Controllers
         }
 
 
+        
+        [AllowAnonymous]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateValue(int id, Value value)
+        {
+            
+           _context.Values.Update(value);
+           // var valueToUpdate = await _cotext.Values.FindAsync(id);
+
+           // valueToUpdate.Name= value.Name;
+           //_mapper.Map(value, valueToUpdate);
+
+           if(await _context.SaveChangesAsync()>0)
+            return Ok();
+            throw new System.Exception($"Failed to Update user {id}");
+        }
+
 
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-           
-            
+
+
 
             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
             if (userFromRepo == null)
@@ -111,24 +131,25 @@ namespace DatingApp.API.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
 
-            var creds=new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject=new ClaimsIdentity(claims),
-                Expires=DateTime.Now.AddDays(1),
-                SigningCredentials=creds
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
 
             };
 
-            var tokenHandler=new JwtSecurityTokenHandler();
-            var token=tokenHandler.CreateToken(tokenDescriptor);
-            return Ok(new{
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return Ok(new
+            {
                 token = tokenHandler.WriteToken(token)
             });
 
-            
-           
+
+
 
 
         }
