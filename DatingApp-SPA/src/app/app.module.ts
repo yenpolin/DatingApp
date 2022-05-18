@@ -18,7 +18,6 @@ import { AuthService } from './_services/auth.service';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { TestComponent } from './test/test.component';
-import { DiraddformComponent } from './diraddform/diraddform.component';
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { MemberListComponent } from './members/member-list/member-list.component';
 import { MemberCardComponent } from './members/member-card/member-card.component';
@@ -50,7 +49,6 @@ export function tokenGetter() {
       HomeComponent,
       RegisterComponent,
       TestComponent,
-      DiraddformComponent,
       MemberListComponent,
       ListsComponent,
       MessagesComponent,
